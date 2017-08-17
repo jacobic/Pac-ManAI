@@ -110,23 +110,18 @@ def depthFirstSearch(problem):
   """
   "*** YOUR CODE HERE ***"
   
-  frontier, explored, path = util.Stack(), util.Stack(), util.Stack()
-  frontier.push(problem.getStartState())
-    
-  while True:
-    if not frontier:
-      return False
-    node = frontier.pop()
-    if node == problem.goal and path.list is not None:
-      return path.list
-    explored.push(node)
-    successors = problem.getSuccessors(node)
-    path = util.Stack()
-    for s in successors:
-      if s[0] not in frontier.list and s[0] not in explored.list:
-        path.push(s[1])
-        frontier.push(s[0])
-
+  frontier = util.Stack()
+  frontier.push((problem.getStartState(), [], 0))
+  
+  while not frontier.isEmpty():
+    node, path, cost = frontier.pop()        
+    if problem.isGoalState(node):
+      return path
+    for n, p, c in problem.getSuccessors(node):
+      if n not in frontier.list and n not in problem._visitedlist:
+        frontier.push((n, path + [p], c))
+  return False
+  
 def breadthFirstSearch(problem):
   """
   Search the shallowest nodes in the search tree first.
