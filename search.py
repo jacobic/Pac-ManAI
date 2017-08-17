@@ -5,6 +5,7 @@
 # purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
+from platform import node
 
 """
 In search.py, you will implement generic search algorithms which are called 
@@ -76,6 +77,30 @@ def depthFirstSearch(problem):
   the goal.  Make sure to implement a graph search algorithm 
   [2nd Edition: Fig. 3.18, 3rd Edition: Fig 3.7].
   
+  ****************************************************************************
+  
+  An informal description of the general tree-search and graph-search 
+  algorithms. The parts of GRAPH-SEARCH marked with ** are the additions 
+  needed to handle repeated states:
+  
+  function GRAPH-SEARCH(problem) returns a solution, or failure 
+  initialize the frontier using the initial state of problem
+  **initialize the explored set to be empty**
+  loop do
+    if the frontier is empty then return failure
+    choose a leaf node and remove it from the frontier
+    if the node contains a goal state then return the corresponding solution 
+    **add the node to the explored set**
+    expand the chosen node, adding the resulting nodes to the frontier
+      **only if not in the frontier or explored set**
+  
+  ****************************************************************************
+  
+  Depth-first search uses a LIFO queue. A LIFO queue means that the most 
+  recently generated node is chosen for expansion. This must be the deepest 
+  unexpanded node because it is one deeper than its parent-which, in turn, 
+  was the deepest unexpanded node when it was selected.
+  
   To get started, you might want to try some of these simple commands to
   understand the search problem that is being passed in:
   
@@ -84,8 +109,19 @@ def depthFirstSearch(problem):
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
-
+  
+  frontier = util.Stack()
+  frontier.push((problem.getStartState(), [], 0))
+  
+  while not frontier.isEmpty():
+    node, path, cost = frontier.pop()        
+    if problem.isGoalState(node):
+      return path
+    for n, p, c in problem.getSuccessors(node):
+      if n not in frontier.list and n not in problem._visitedlist:
+        frontier.push((n, path + [p], c))
+  return False
+  
 def breadthFirstSearch(problem):
   """
   Search the shallowest nodes in the search tree first.
