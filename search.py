@@ -89,9 +89,10 @@ def depthFirstSearch(problem):
   loop do
     if the frontier is empty then return failure
     choose a leaf node and remove it from the frontier
-    if the node contains a goal state then return the corresponding solution 
+    if the node contains a goal state then return the corresponding solution (path) 
     **add the node to the explored set**
     expand the chosen node, adding the resulting nodes to the frontier
+    append the path with the direction from the successors of the node
       **only if not in the frontier or explored set**
   
   ****************************************************************************
@@ -102,13 +103,8 @@ def depthFirstSearch(problem):
   was the deepest unexpanded node when it was selected.
   
   To get started, you might want to try some of these simple commands to
-  understand the search problem that is being passed in:
-  
-  print "Start:", problem.getStartState()
-  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-  print "Start's successors:", problem.getSuccessors(problem.getStartState())
+  understand the search problem that is being passed in: 
   """
-  "*** YOUR CODE HERE ***"
   
   frontier = util.Stack()
   frontier.push((problem.getStartState(), [], 0))
@@ -126,14 +122,48 @@ def breadthFirstSearch(problem):
   """
   Search the shallowest nodes in the search tree first.
   [2nd Edition: p 73, 3rd Edition: p 82]
+  
+  function BREADTH-FIRST-SEARCH(problem) returns a solution, or failure
+  node <- a node with STATE = problem.INITIAL-STATE, PATH-COST = 0
+  if problem.GOAL-TEST(node.STATE) then return SOLUTION(node)
+  frontier <- a FIFO queue with node as the only element
+  explored <- an empty set
+  loop do
+    if EMPTY?(frontier) then return failure
+    node<-POP(frontier) /*choosestheshallowestnodeinfrontier */ add node.STATE to explored
+    for each action in problem.ACTIONS(node.STATE) do
+      child <-CHILD-NODE(problem,node,action)
+      if child.STATE is not in explored or frontier then
+      if problem.GOAL-TEST(child.STATE) then return SOLUTION(child)
+      frontier <-INSERT(child,frontier)
   """
-  "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  frontier = util.Queue()
+  frontier.push((problem.getStartState(), [], 0))
+  
+  while not frontier.isEmpty():
+    node, path, cost = frontier.pop()        
+    if problem.isGoalState(node):
+      return path
+    for n, p, c in problem.getSuccessors(node):
+      if n not in frontier.list and n not in problem._visitedlist:
+        frontier.push((n, path + [p], c))
+  return False
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  
+  frontier = util.PriorityQueue()
+  frontier.push((problem.getStartState(), []), 0)
+  
+  while not frontier.isEmpty():
+    (node, path) = frontier.pop()        
+    if problem.isGoalState(node):
+      return path
+    for n, p, c in problem.getSuccessors(node):
+      if n not in frontier.heap and n not in problem._visitedlist:
+        frontier.push((n, path + [p]), c)
+  return False
 
 def nullHeuristic(state, problem=None):
   """
