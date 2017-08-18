@@ -76,36 +76,7 @@ def depthFirstSearch(problem):
   Your search algorithm needs to return a list of actions that reaches
   the goal.  Make sure to implement a graph search algorithm 
   [2nd Edition: Fig. 3.18, 3rd Edition: Fig 3.7].
-  
-  ****************************************************************************
-  
-  An informal description of the general tree-search and graph-search 
-  algorithms. The parts of GRAPH-SEARCH marked with ** are the additions 
-  needed to handle repeated states:
-  
-  function GRAPH-SEARCH(problem) returns a solution, or failure 
-  initialize the frontier using the initial state of problem
-  **initialize the explored set to be empty**
-  loop do
-    if the frontier is empty then return failure
-    choose a leaf node and remove it from the frontier
-    if the node contains a goal state then return the corresponding solution (path) 
-    **add the node to the explored set**
-    expand the chosen node, adding the resulting nodes to the frontier
-    append the path with the direction from the successors of the node
-      **only if not in the frontier or explored set**
-  
-  ****************************************************************************
-  
-  Depth-first search uses a LIFO queue. A LIFO queue means that the most 
-  recently generated node is chosen for expansion. This must be the deepest 
-  unexpanded node because it is one deeper than its parent-which, in turn, 
-  was the deepest unexpanded node when it was selected.
-  
-  To get started, you might want to try some of these simple commands to
-  understand the search problem that is being passed in: 
   """
-  
   frontier = util.Stack()
   frontier.push((problem.getStartState(), [], 0))
   
@@ -122,20 +93,6 @@ def breadthFirstSearch(problem):
   """
   Search the shallowest nodes in the search tree first.
   [2nd Edition: p 73, 3rd Edition: p 82]
-  
-  function BREADTH-FIRST-SEARCH(problem) returns a solution, or failure
-  node <- a node with STATE = problem.INITIAL-STATE, PATH-COST = 0
-  if problem.GOAL-TEST(node.STATE) then return SOLUTION(node)
-  frontier <- a FIFO queue with node as the only element
-  explored <- an empty set
-  loop do
-    if EMPTY?(frontier) then return failure
-    node<-POP(frontier) /*choosestheshallowestnodeinfrontier */ add node.STATE to explored
-    for each action in problem.ACTIONS(node.STATE) do
-      child <-CHILD-NODE(problem,node,action)
-      if child.STATE is not in explored or frontier then
-      if problem.GOAL-TEST(child.STATE) then return SOLUTION(child)
-      frontier <-INSERT(child,frontier)
   """
   frontier = util.Queue()
   frontier.push((problem.getStartState(), [], 0))
@@ -151,8 +108,6 @@ def breadthFirstSearch(problem):
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
-  "*** YOUR CODE HERE ***"
-  
   frontier = util.PriorityQueue()
   frontier.push((problem.getStartState(), []), 0)
   
@@ -174,19 +129,16 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
-  
   frontier = util.PriorityQueue()
-  h_start = heuristic(problem.getStartState(), problem)
-  frontier.push((problem.getStartState(), []), 0 + h_start)
-  
+  frontier.push((problem.getStartState(), []), 0)
+
   while not frontier.isEmpty():
     (node, path) = frontier.pop()        
     if problem.isGoalState(node):
       return path
     for n, p, c in problem.getSuccessors(node):
       if n not in frontier.heap and n not in problem._visitedlist:
-        h = heuristic(n, problem)
-        frontier.push((n, path + [p]), c + h)
+        frontier.push((n, path + [p]), c + heuristic(n, problem))
   return False
   
 # Abbreviations
