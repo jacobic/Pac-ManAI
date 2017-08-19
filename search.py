@@ -96,13 +96,17 @@ def breadthFirstSearch(problem):
   """
   frontier = util.Queue()
   frontier.push((problem.getStartState(), [], 0))
+  explored = set()
   
   while not frontier.isEmpty():
     node, path, cost = frontier.pop()        
     if problem.isGoalState(node):
       return path
+    if node in explored:
+      continue
+    explored.add(node)
     for n, p, c in problem.getSuccessors(node):
-      if n not in frontier.list and n not in problem._visitedlist:
+      if n not in frontier.list and n not in explored:
         frontier.push((n, path + [p], c))
   return False
       
@@ -110,13 +114,17 @@ def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   frontier = util.PriorityQueue()
   frontier.push((problem.getStartState(), []), 0)
+  explored = set()
   
   while not frontier.isEmpty():
     (node, path) = frontier.pop()        
     if problem.isGoalState(node):
       return path
+    if node in explored:
+      continue
+    explored.add(node)
     for n, p, c in problem.getSuccessors(node):
-      if n not in frontier.heap and n not in problem._visitedlist:
+      if n not in frontier.heap and n not in explored:
         frontier.push((n, path + [p]), c)
   return False
 
@@ -131,14 +139,19 @@ def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
   frontier = util.PriorityQueue()
   frontier.push((problem.getStartState(), []), 0)
-
+  explored = set()
+  
   while not frontier.isEmpty():
     (node, path) = frontier.pop()        
     if problem.isGoalState(node):
       return path
+    if node in explored:
+      continue
+    explored.add(node)
     for n, p, c in problem.getSuccessors(node):
-      if n not in frontier.heap and n not in problem._visitedlist:
-        frontier.push((n, path + [p]), c + heuristic(n, problem))
+      if n not in frontier.heap and n not in explored:
+        h = heuristic(n, problem)
+        frontier.push((n, path + [p]), c + h)
   return False
   
 # Abbreviations
