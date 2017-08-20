@@ -5,6 +5,7 @@
 # purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
+from multiprocessing.managers import State
 
 """
 This file contains all of the agents that can be selected to 
@@ -31,6 +32,7 @@ Good luck and happy searching!
 from game import Directions
 from game import Agent
 from game import Actions
+from copy import deepcopy
 import util
 import time
 import search
@@ -190,7 +192,7 @@ class PositionSearchProblem(search.SearchProblem):
       if not self.walls[nextx][nexty]:
         nextState = (nextx, nexty)
         cost = self.costFn(nextState)
-        successors.append( ( nextState, action, cost) )
+        successors.append((nextState, action, cost))
         
     # Bookkeeping for display purposes
     self._expanded += 1 
@@ -320,7 +322,7 @@ class CornersProblem(search.SearchProblem):
         nextPosition = (nextx, nexty)
         nextCorners = tuple(c for c in corners if c != (nextx, nexty))
         nextState = (nextPosition, nextCorners)
-        cost = self.costFn
+        cost = 1
         successors.append((nextState, action, cost)) 
 
     # Bookkeeping for display purposes
@@ -359,11 +361,29 @@ def cornersHeuristic(state, problem):
   on the shortes  te to a goal of the problem; i.e.
   it should be admissible (as well as consistent).
   """
-  corners = problem.corners # These are the corner coordinates
+  #corners = problem.corners # These are the corner coordinates
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-  
+  h, w = problem.walls.height, problem.walls.width
   "*** YOUR CODE HERE ***"
-  return 0 # Default to trivial solution
+  currentPosition, corners = state
+  x, y = currentPosition
+  #grid = [[(i, j) for j in range(0, h)] for i in range(0, w)]
+  grid = [[(i, j) if not walls.data[i][j] else None for j in range(0, h)] 
+           for i in range(0, w)]
+  
+  score = 0
+  korners = corners + ()
+  for c in corners:
+    lookup = {((x, y), k): (abs(x - k[0]) + abs(y - k[1]))  for k in korners}   
+    minDist = min(lookup.values())
+    score += minDist 
+    for key, value in lookup.iteritems():
+      if value == minDist:
+        minKey = key      
+    x, y = minKey[1]
+    korners = [k for k in korners if k != (x, y)]
+  return score
+
 
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
