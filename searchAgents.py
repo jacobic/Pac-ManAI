@@ -347,7 +347,21 @@ class CornersProblem(search.SearchProblem):
       if self.walls[x][y]: return 999999
     return len(actions)
 
-
+def finalHeuristic(currentPosition, goals):
+  x, y = currentPosition
+  score = 0
+  goalsCopy = goals + ()
+  for goal in goals:
+    table = {((x, y), g): (abs(x - g[0]) + abs(y - g[1]))  for g in goalsCopy}   
+    minDist = min(table.values())
+    score += minDist  # cumulative Manhattan distance to nearest corner
+    for key, value in table.iteritems():
+      if value == minDist:
+        minKey = key      
+    x, y = minKey[1] 
+    goalsCopy = tuple([g for g in goalsCopy if g != (x, y)])
+  return score
+    
 def cornersHeuristic(state, problem):
   """
   A heuristic for the CornersProblem that you defined.
@@ -361,28 +375,8 @@ def cornersHeuristic(state, problem):
   on the shortes  te to a goal of the problem; i.e.
   it should be admissible (as well as consistent).
   """
-  #corners = problem.corners # These are the corner coordinates
-  walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-  h, w = problem.walls.height, problem.walls.width
-  "*** YOUR CODE HERE ***"
   currentPosition, corners = state
-  x, y = currentPosition
-  #grid = [[(i, j) for j in range(0, h)] for i in range(0, w)]
-  grid = [[(i, j) if not walls.data[i][j] else None for j in range(0, h)] 
-           for i in range(0, w)]
-  
-  score = 0
-  korners = corners + ()
-  for c in corners:
-    lookup = {((x, y), k): (abs(x - k[0]) + abs(y - k[1]))  for k in korners}   
-    minDist = min(lookup.values())
-    score += minDist 
-    for key, value in lookup.iteritems():
-      if value == minDist:
-        minKey = key      
-    x, y = minKey[1]
-    korners = [k for k in korners if k != (x, y)]
-  return score
+  return finalHeuristic(currentPosition, corners)
 
 
 class AStarCornersAgent(SearchAgent):
@@ -472,9 +466,10 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount'] = problem.walls.count()
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
-  position, foodGrid = state
-  "*** YOUR CODE HERE ***"
-  return 0
+  currentPosition, foodGrid = state
+  h, w = problem.walls.height, problem.walls.width
+  foodTuple = tuple([(i, j) for j in range(0, h) for i in range(0, w) if foodGrid.data[i][j]]) 
+  return finalHeuristic(currentPosition, foodTuple)
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
