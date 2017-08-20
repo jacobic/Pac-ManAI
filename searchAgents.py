@@ -6,6 +6,7 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 from multiprocessing.managers import State
+from search import depthFirstSearch
 
 """
 This file contains all of the agents that can be selected to 
@@ -491,15 +492,9 @@ class ClosestDotSearchAgent(SearchAgent):
   def findPathToClosestDot(self, gameState):
     "Returns a path (a list of actions) to the closest dot, starting from gameState"
     # Here are some useful elements of the startState
-    startPosition = gameState.getPacmanPosition()
-    food = gameState.getFood()
-    walls = gameState.getWalls()
     problem = AnyFoodSearchProblem(gameState)
+    return search.breadthFirstSearch(problem)
 
-    "*** YOUR CODE HERE ***"
-    foodTuple = tuple([(i, j) for j in range(0, h) for i in range(0, w) if food.data[i][j]]) 
-    return 0
-  
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
     A search problem for finding a path to any food.
@@ -531,11 +526,12 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     The state is Pacman's position. Fill this in with a goal test
     that will complete the problem definition.
     """
-    x,y = state
-    
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    x, y = state
+    walls = self.walls
+    h, w = walls.height, walls.width
+    foodTuple = tuple([(i, j) for j in range(0, h) for i in range(0, w) if self.food.data[i][j]]) 
+    return bool(state in foodTuple)
+  
 ##################
 # Mini-contest 1 #
 ##################
