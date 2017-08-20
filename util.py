@@ -92,6 +92,7 @@ class PriorityQueueWithFunction(PriorityQueue):
   def push(self, item):
     "Adds an item to the queue with priority from the priority function"
     PriorityQueue.push(self, item, self.priorityFunction(item))
+    #(position, problem, info={})
 
     
 def manhattanDistance( xy1, xy2 ):

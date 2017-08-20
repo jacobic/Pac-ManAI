@@ -150,8 +150,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     explored.add(node)
     for n, p, c in problem.getSuccessors(node):
       if n not in frontier.heap and n not in explored:
-        h = heuristic(n, problem)
-        frontier.push((n, path + [p]), c + h)
+        frontier.push((n, path + [p]), c + heuristic(n, problem))
   return False
   
 # Abbreviations
