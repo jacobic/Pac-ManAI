@@ -497,7 +497,8 @@ class ClosestDotSearchAgent(SearchAgent):
     problem = AnyFoodSearchProblem(gameState)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    foodTuple = tuple([(i, j) for j in range(0, h) for i in range(0, w) if food.data[i][j]]) 
+    return 0
   
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
